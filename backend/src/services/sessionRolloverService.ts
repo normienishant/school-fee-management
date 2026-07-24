@@ -1,6 +1,7 @@
 import prisma from '../prisma/client';
 import { createAuditLog } from './auditService';
 import { computeStudentTotalFee } from './feeCalculationService';
+import { Prisma } from '@prisma/client';
 
 export const rolloverSession = async (newAcademicYear: string, staffId: string) => {
   return await prisma.$transaction(async (tx) => {
@@ -22,7 +23,7 @@ export const rolloverSession = async (newAcademicYear: string, staffId: string) 
       paidFee: student.paidFee,
       pendingBalance: student.pendingBalance,
       openingBalance: student.openingBalance,
-      feeBreakdown: student.feeBreakdown,
+      feeBreakdown: student.feeBreakdown === null ? Prisma.JsonNull : student.feeBreakdown,
       sessionId: currentSession.id,
     }));
 
@@ -54,7 +55,7 @@ export const rolloverSession = async (newAcademicYear: string, staffId: string) 
           paidFee: 0,
           pendingBalance: openingBalance,
           openingBalance: openingBalance,
-          feeBreakdown: null,
+          feeBreakdown: Prisma.JsonNull,
           status: 'ACTIVE',
         },
       });
