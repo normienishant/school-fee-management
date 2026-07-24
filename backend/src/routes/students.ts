@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import prisma from '../prisma/client';
 import { authMiddleware } from '../middleware/auth';
 import { requireRole } from '../middleware/roles';
@@ -10,7 +10,7 @@ import { validate } from '../middleware/validation';
 const router = express.Router();
 router.use(authMiddleware);
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   const { grade, status, search } = req.query;
   const where: any = {};
   if (grade) where.gradeClass = grade as string;
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
   res.json({ success: true, data: students });
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   const student = await prisma.student.findUnique({
     where: { id: req.params.id },
     include: { transactions: true, instalments: true },
@@ -51,7 +51,7 @@ router.post(
     body('parentPhone').notEmpty(),
     body('enrollmentDate').isISO8601().toDate(),
   ]),
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const { name, gradeClass, section, parentName, parentPhone, parentEmail, enrollmentDate, siblings } = req.body;
 
     try {
@@ -78,7 +78,8 @@ router.post(
         },
       });
 
-      await createAuditLog(req.staff.staffId, 'CREATE', 'Student', student.id, { student });
+      const staff = (req as any).staff;
+      await createAuditLog(staff.staffId, 'CREATE', 'Student', student.id, { student });
 
       res.status(201).json({ success: true, data: student });
     } catch (err: any) {
@@ -87,7 +88,7 @@ router.post(
   }
 );
 
-router.put('/:id', requireRole(['ADMIN']), async (req, res) => {
+router.put('/:id', requireRole(['ADMIN']), async (req: Request, res: Response) => {
   const { id } = req.params;
   const updates = req.body;
   delete updates.id;
@@ -97,21 +98,23 @@ router.put('/:id', requireRole(['ADMIN']), async (req, res) => {
       where: { id },
       data: updates,
     });
-    await createAuditLog(req.staff.staffId, 'UPDATE', 'Student', id, { updates });
+    const staff = (req as any).staff;
+    await createAuditLog(staff.staffId, 'UPDATE', 'Student', id, { updates });
     res.json({ success: true, data: student });
   } catch (err: any) {
     res.status(400).json({ success: false, error: err.message });
   }
 });
 
-router.delete('/:id', requireRole(['ADMIN']), async (req, res) => {
+router.delete('/:id', requireRole(['ADMIN']), async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     await prisma.student.update({
       where: { id },
       data: { status: 'WITHDRAWN' },
     });
-    await createAuditLog(req.staff.staffId, 'DELETE', 'Student', id, { action: 'soft_delete' });
+    const staff = (req as any).staff;
+    await createAuditLog(staff.staffId, 'DELETE', 'Student', id, { action: 'soft_delete' });
     res.json({ success: true, message: 'Student withdrawn' });
   } catch (err: any) {
     res.status(400).json({ success: false, error: err.message });
