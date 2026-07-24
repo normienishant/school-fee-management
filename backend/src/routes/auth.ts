@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import prisma from '../prisma/client';
 import { body, validationResult } from 'express-validator';
 
@@ -31,12 +31,15 @@ router.post(
         return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
 
-      // ✅ FIX: Use any to bypass type overload issue
-      const secret: any = process.env.JWT_SECRET || 'defaultSecretKey';
+      const secret = process.env.JWT_SECRET || 'defaultSecretKey';
+      const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
+      
+      // ✅ Explicitly type sign options
+      const signOptions: SignOptions = { expiresIn };
       const token = jwt.sign(
         { staffId: staff.id, email: staff.email, role: staff.role },
         secret,
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+        signOptions
       );
 
       res.json({
