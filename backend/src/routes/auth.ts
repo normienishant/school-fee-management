@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import prisma from '../prisma/client';
 import { body, validationResult } from 'express-validator';
 
@@ -32,14 +32,12 @@ router.post(
       }
 
       const secret = process.env.JWT_SECRET || 'defaultSecretKey';
-      const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
       
-      // ✅ Explicitly type sign options
-      const signOptions: SignOptions = { expiresIn };
+      // ✅ FINAL FIX: Cast options to any to bypass type strictness
       const token = jwt.sign(
         { staffId: staff.id, email: staff.email, role: staff.role },
         secret,
-        signOptions
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
       );
 
       res.json({
