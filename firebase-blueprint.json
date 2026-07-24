@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "students": {
+      "title": "Students",
+      "description": "Student roster with fee balances and contact info",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "rollNumber": { "type": "string" },
+        "gradeClass": { "type": "string" },
+        "parentName": { "type": "string" },
+        "parentPhone": { "type": "string" },
+        "totalFee": { "type": "number" },
+        "paidFee": { "type": "number" },
+        "pendingBalance": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["name", "rollNumber", "gradeClass", "parentPhone", "totalFee", "paidFee", "pendingBalance"]
+    },
+    "transactions": {
+      "title": "Transactions",
+      "description": "Fee collection receipts and ledger logs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "receiptNumber": { "type": "string" },
+        "studentId": { "type": "string" },
+        "amount": { "type": "number" },
+        "paymentMode": { "type": "string" },
+        "date": { "type": "string" },
+        "receivedBy": { "type": "string" }
+      },
+      "required": ["receiptNumber", "studentId", "amount", "paymentMode", "date", "receivedBy"]
+    },
+    "schoolInfo": {
+      "title": "School Settings",
+      "description": "School configuration profile",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "academicYear": { "type": "string" }
+      }
+    }
+  }
+}

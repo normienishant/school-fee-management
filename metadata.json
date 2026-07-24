@@ -1,0 +1,6 @@
+{
+  "name": "School Fee Management System",
+  "description": "Simple and intuitive fee tracking, receipt generation, automated parent reminders, and financial reporting software for small schools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
