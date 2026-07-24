@@ -1,7 +1,7 @@
 import prisma from '../prisma/client';
 import { getNextReceiptNumber } from './receiptService';
 import { createAuditLog } from './auditService';
-import { PaymentMode, Status } from '@prisma/client';
+import { PaymentMode } from '@prisma/client';
 
 interface RecordPaymentInput {
   studentId: string;
@@ -47,7 +47,6 @@ export const recordPayment = async (data: RecordPaymentInput, staffId: string) =
       data: {
         paidFee: newPaid,
         pendingBalance: newPending,
-        status: newPending === 0 ? Status.PAID : Status.PARTIAL,
         updatedAt: new Date(),
       },
     });
@@ -76,7 +75,6 @@ export const voidPayment = async (paymentId: string, reason: string, staffId: st
       data: {
         paidFee: newPaid,
         pendingBalance: newPending,
-        status: newPending === 0 ? Status.PAID : Status.PARTIAL,
       },
     });
 
