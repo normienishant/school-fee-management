@@ -31,9 +31,11 @@ router.post(
         return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
 
+      // ✅ FIX: Cast secret to string to resolve overload
+      const secret = process.env.JWT_SECRET as string;
       const token = jwt.sign(
         { staffId: staff.id, email: staff.email, role: staff.role },
-        process.env.JWT_SECRET!,
+        secret,
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
 
